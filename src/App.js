@@ -6,9 +6,16 @@ import Arrived from './components/Arrived'
 import Client from './components/Client'
 import Aside from './components/Aside'
 import Footer from './components/Footer'
+import Offline from './components/Offline'
+
 
 function App() {
   const [items, setItems] = React.useState([]);
+  const [offline, setOffline] = React.useState(!navigator.onLine);
+
+  function handleOfflineStatus() {
+    setOffline(!navigator.onLine);
+  }
 
   React.useEffect(function() {
     (async function() {
@@ -21,10 +28,25 @@ function App() {
       });
       const { nodes } = await res.json();
       setItems(nodes);
+
+      const script = document.createElement("script");
+      script.async = false;
+      script.src = "/carousel.js";
+      document.body.appendChild(script);
     })();
-  }, []);
+
+    handleOfflineStatus();
+    window.addEventListener('online', handleOfflineStatus);
+    window.addEventListener('offline', handleOfflineStatus);
+
+    return function() {
+      window.removeEventListener('online', handleOfflineStatus);
+      window.removeEventListener('offline', handleOfflineStatus);
+    }
+  }, [offline]);
   return (
     <>
+    {offline && <Offline/>}
     <Header/>
     <Hero/>
     <Browse/>
