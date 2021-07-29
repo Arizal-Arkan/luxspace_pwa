@@ -7,11 +7,13 @@ import Client from './components/Client'
 import Aside from './components/Aside'
 import Footer from './components/Footer'
 import Offline from './components/Offline'
+import Splash from './pages/Spalsh'
 
 
 function App() {
   const [items, setItems] = React.useState([]);
   const [offline, setOffline] = React.useState(!navigator.onLine);
+  const [isLoading, setLoading] = React.useState(true);
 
   function handleOfflineStatus() {
     setOffline(!navigator.onLine);
@@ -39,6 +41,10 @@ function App() {
     window.addEventListener('online', handleOfflineStatus);
     window.addEventListener('offline', handleOfflineStatus);
 
+    setTimeout(function(){
+      setLoading(false);
+    }, 1500)
+
     return function() {
       window.removeEventListener('online', handleOfflineStatus);
       window.removeEventListener('offline', handleOfflineStatus);
@@ -46,6 +52,9 @@ function App() {
   }, [offline]);
   return (
     <>
+    {isLoading === true ? <Splash/> : 
+    (
+      <>
     {offline && <Offline/>}
     <Header/>
     <Hero/>
@@ -54,6 +63,8 @@ function App() {
     <Client/>
     <Aside/>
     <Footer/>
+    </>
+    )}
     </>
   );
 }
